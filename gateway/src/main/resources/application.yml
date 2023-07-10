@@ -1,0 +1,42 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: calculator
+          uri: lb://calculator
+          predicates:
+            - Path=/calculate/**
+          filters:
+            - AuthenticationFilter
+#            - CircuitBreaker=myCircuitBreaker
+
+        - id: IDENTITY-SERVICE
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**
+          filters:
+            - AuthenticationFilter
+#            - CircuitBreaker=myCircuitBreaker
+        - id: calculator2
+          uri: lb://calculator2
+          predicates:
+            - Path=/calculate02/**
+          filters:
+            - AuthenticationFilter
+
+
+  main:
+    web-application-type: reactive
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
